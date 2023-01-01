@@ -1,44 +1,37 @@
-import React from 'react';
-import Like from '../Like';
+import React, { Component } from 'react';
+import Like from './Like';
+import TableBody from './TableBody';
+import TableHeader from './tableHeader';
 
-const MoviesTable = (props) => {
-  // Object destructuring at the beginning of every functional component
-  const { movies, onDelete, onLike, onSort } = props;
+class MoviesTable extends Component {
+  columns = [
+    { path: 'title', label: 'Title' },
+    { path: 'genre.name', label: 'Genre' },
+    { path: 'numberInStock', label: 'Stock' },
+    { path: 'dailyRentalRate', label: 'Rate' },
+    {
+      key: 'like',
+      content: movie => (
+        <Like like={movie.like} onClick={() => this.props.onLike(movie)} />
+      )
+    },
+    {
+      key: 'delete',
+      content: movie => (
+        <button onClick={() => this.props.onDelete(movie)} className='btn btn-danger btn-sm'>Delete</button>
+      )
+    }
+  ];
 
-  return (
-    <table className="table">
-      <thead>
-        <tr>
-          <th onClick={() => onSort('title')}>Title</th>
-          <th onClick={() => onSort('genre.name')}>Genre</th>
-          <th onClick={() => onSort('numberInStock')}>Stock</th>
-          <th onClick={() => onSort('dailyRentalRate')}>Rate</th>
-          <th />
-          <th />
-        </tr>
-      </thead>
-      <tbody>
-        {movies.map(movie => (
-          <tr key={movie._id}>
-            <td>{movie.title}</td>
-            <td>{movie.genre.name}</td>
-            <td>{movie.numberInStock}</td>
-            <td>{movie.dailyRentalRate}</td>
-            <td>
-              <Like
-                like={movie.like}
-                onClick={() => onLike(movie)}
-              />
-            </td>
-            <button
-              onClick={() => onDelete(movie)}
-              className='btn btn-danger btn-sm'>Delete
-            </button>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
+  render() {
+    const { movies, onDelete, onLike, onSort, sortColumn } = this.props;
+    return (
+      <table className="table">
+        <TableHeader columns={this.columns} sortColumn={sortColumn} onSort={onSort} />
+        <TableBody columns={this.columns} data={movies} />
+      </table>
+    )
+  }
 }
 
 export default MoviesTable;
